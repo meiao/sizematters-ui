@@ -1,20 +1,21 @@
 <template>
   <div class="home">
-    This is the home.
-    <md-button class="md-raised" md-primary v-on:click="sendData">
-      Send Data
-    </md-button>
+    Welcome to Size Matters.
+    <br />Here you can get a room with all your developer team and see who has
+    the bigger size.<br />Or fight until you reach an agreement.
+    <br />
   </div>
 </template>
 
+<style scoped lang="scss">
+.home {
+  text-align: left;
+}
+</style>
+
 <script>
-import websocket from "../../api/websocket";
-export default {
-  name: "Home",
-  methods: {
-    sendData: function() {
-      websocket.joinRoom();
-    },
-  }
-};
+import { Component, Vue } from "vue-property-decorator";
+
+@Component
+export default class Home extends Vue {}
 </script>

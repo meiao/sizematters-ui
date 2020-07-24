@@ -1,38 +1,9 @@
 <template>
   <md-app id="app">
     <md-app-toolbar class="md-primary">
-      Size Matters
+      <h1>Size Matters</h1>
     </md-app-toolbar>
     <md-app-drawer id="nav" md-permanent="clipped">
-      <md-toolbar>
-        <md-dialog-prompt
-          :md-active.sync="showNameDialog"
-          v-model="providedName"
-          md-title="What's your name?"
-        />
-        <md-dialog-prompt
-          :md-active.sync="showEmailDialog"
-          v-model="providedUrl"
-          md-title="Profile picture"
-          md-content="I tried my best to create a profile picture for you.<br />
-                      Since you didn't like it, you can use your Gravatar image.<br />
-                      I will need your email for such.<br />
-                      I promise I won't save/sell your email."
-        />
-        <md-avatar md-avatar-icon md-small md-primary>
-          <img
-            v-if="imgUrl != ''"
-            :src="imgUrl"
-            @click="showEmailDialog = true"
-          />
-          <span v-if="imgUrl == ''" @click="showEmailDialog = true">{{
-            name.substring(0, 1)
-          }}</span>
-        </md-avatar>
-        <div @click="showNameDialog = true">
-          {{ name }}
-        </div>
-      </md-toolbar>
       <router-view name="menu" />
     </md-app-drawer>
 
@@ -70,35 +41,9 @@
 }
 </style>
 <script lang="ts">
-import websocket from "../api/websocket";
-import { UserData } from "../api/data";
 import Component from "vue-class-component";
 import Vue from "vue";
 
 @Component
-export default class App extends Vue {
-  name = "not connected";
-  imgUrl = "";
-  showNameDialog = false;
-  showEmailDialog = false;
-
-  created() {
-    websocket.on("YourData", this.personalDataReceived);
-  }
-
-  personalDataReceived(data) {
-    const userData: UserData = data.user;
-    this.name = userData.name;
-    this.imgUrl =
-      "https://www.gravatar.com/avatar/" + userData.gravatar_id + "?d=retro";
-  }
-
-  set providedUrl(value) {
-    websocket.setAvatar(value);
-  }
-
-  set providedName(value) {
-    websocket.setName(value);
-  }
-}
+export default class App extends Vue {}
 </script>

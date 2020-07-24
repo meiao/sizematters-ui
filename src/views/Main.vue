@@ -40,3 +40,17 @@
   display: flex;
 }
 </style>
+
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import websocket from "../../api/websocket";
+import router from "../router";
+@Component
+export default class Main extends Vue {
+  created() {
+    if (!websocket.isConnected()) {
+      router.push({ name: "Home" });
+    }
+  }
+}
+</script>

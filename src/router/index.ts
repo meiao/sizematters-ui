@@ -1,7 +1,8 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
-import MenuMain from "../components/MenuMain.vue";
+import MainMenu from "../components/menu/MainMenu.vue";
+import NoMenu from "../components/menu/NoMenu.vue";
 
 Vue.use(VueRouter);
 
@@ -11,19 +12,27 @@ const routes: Array<RouteConfig> = [
     name: "Home",
     components: {
       default: Home,
-      menu: MenuMain
+      menu: NoMenu
     }
   },
   {
-    path: "/about",
-    name: "About",
+    path: "/main",
+    name: "main",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     components: {
+      default: () => import(/* webpackChunkName: "main" */ "../views/Main.vue"),
+      menu: MainMenu
+    }
+  },
+  {
+    path: "/Error/:type",
+    name: "error",
+    components: {
       default: () =>
-        import(/* webpackChunkName: "about" */ "../views/About.vue"),
-      menu: MenuMain
+        import(/* webpackChunkName: "error" */ "../views/Error.vue"),
+      menu: NoMenu
     }
   }
 ];
