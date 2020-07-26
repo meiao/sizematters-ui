@@ -3,3 +3,8 @@ export interface UserData {
   name: string;
   gravatar_id: string;
 }
+
+export interface RoomJoined {
+  room_name: string;
+  users: UserData[];
+}

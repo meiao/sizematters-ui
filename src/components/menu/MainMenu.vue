@@ -2,12 +2,12 @@
   <div>
     <md-dialog-prompt
       :md-active.sync="showNameDialog"
-      v-model="providedName"
+      @md-confirm="setName"
       md-title="What's your name?"
     />
     <md-dialog-prompt
       :md-active.sync="showEmailDialog"
-      v-model="providedUrl"
+      @md-confirm="setAvatar"
       md-title="Profile picture"
       md-content="I tried my best to create a profile picture for you.<br />
                       Since you didn't like it, you can use your Gravatar image.<br />
@@ -40,7 +40,7 @@
           <md-icon>add</md-icon>
         </md-button>
       </header>
-      <md-card v:if="rooms.isEmpty()">
+      <md-card v-if="rooms.length == 0">
         <md-card-content>
           You are not in any room.
           <br />Click the "+" to join one.
@@ -103,7 +103,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import websocket from "../../../api/websocket";
-import { UserData } from "../../../api/data";
+import { UserData, RoomJoined } from "../../../api/data";
 @Component
 export default class MenuMain extends Vue {
   showNameDialog = false;
@@ -113,13 +113,17 @@ export default class MenuMain extends Vue {
   name = "not connected";
   imgUrl = "";
 
+  providedName = "";
+  providedUrl = "";
+
   roomName = "";
   roomPassword = "";
 
-  rooms = {};
+  rooms: string[] = [];
 
   created() {
     websocket.on("YourData", this.personalDataReceived);
+    websocket.on("RoomJoined", this.roomJoined);
     websocket.register();
   }
 
@@ -128,19 +132,28 @@ export default class MenuMain extends Vue {
     this.name = userData.name;
     this.imgUrl =
       "https://www.gravatar.com/avatar/" + userData.gravatar_id + "?d=retro";
+    this.providedName = userData.name;
+    this.providedUrl = "";
   }
 
-  set providedUrl(value) {
-    websocket.setAvatar(value);
+  setName(name) {
+    websocket.setName(name);
   }
 
-  set providedName(value) {
-    websocket.setName(value);
+  setAvatar(email) {
+    websocket.setAvatar(email);
   }
 
   joinRoom() {
     websocket.joinRoom(this.roomName, this.roomPassword);
     this.showRoomDialog = false;
+    this.roomName = "";
+    this.roomPassword = "";
+  }
+
+  roomJoined(data: RoomJoined) {
+    this.rooms.push(data.room_name);
+    console.log(this.rooms.length == 0);
   }
 }
 </script>

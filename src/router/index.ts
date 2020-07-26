@@ -1,15 +1,15 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
-import MainMenu from "../components/menu/MainMenu.vue";
 import NoMenu from "../components/menu/NoMenu.vue";
+import websocket from "@/../api/websocket";
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
     path: "/",
-    name: "Home",
+    name: "home",
     components: {
       default: Home,
       menu: NoMenu
@@ -23,11 +23,12 @@ const routes: Array<RouteConfig> = [
     // which is lazy-loaded when the route is visited.
     components: {
       default: () => import(/* webpackChunkName: "main" */ "../views/Main.vue"),
-      menu: MainMenu
+      menu: () =>
+        import(/* webpackChunkName: "main" */ "../components/menu/MainMenu.vue")
     }
   },
   {
-    path: "/Error/:type",
+    path: "/error/:type",
     name: "error",
     components: {
       default: () =>
@@ -41,6 +42,22 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes
+});
+
+router.beforeEach((to, from, next) => {
+  if (websocket.isConnected()) {
+    if (to.name != "main") {
+      next({ name: "main" });
+    } else {
+      next();
+    }
+  } else {
+    if (to.name == "main") {
+      next({ name: "home" });
+    } else {
+      next();
+    }
+  }
 });
 
 export default router;
