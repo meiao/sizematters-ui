@@ -4,7 +4,13 @@ export interface UserData {
   gravatar_id: string;
 }
 
-export interface RoomJoined {
+export interface RoomStatus {
   room_name: string;
   users: UserData[];
+  votes_cast: number;
+}
+
+export interface UserLeft {
+  room_name: string;
+  user_id: string;
 }

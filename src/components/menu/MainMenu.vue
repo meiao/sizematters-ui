@@ -46,7 +46,19 @@
           <br />Click the "+" to join one.
         </md-card-content>
       </md-card>
-      <div id="room-list"></div>
+      <div id="room-list">
+        <md-card v-for="room in rooms" :key="room.room_name">
+          <md-card-header class="md-primary">
+            <div class="md-title">{{ room.room_name }}</div>
+          </md-card-header>
+          <md-card-content>
+            Voting: {{ room.votes_cast }}/{{ room.users.length }}
+          </md-card-content>
+          <md-card-actions>
+            <md-button @click="leaveRoom(room.room_name)">Leave</md-button>
+          </md-card-actions>
+        </md-card>
+      </div>
     </div>
 
     <div>
@@ -103,7 +115,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import websocket from "../../../api/websocket";
-import { UserData, RoomJoined } from "../../../api/data";
+import { UserData, RoomStatus } from "../../../api/data";
 @Component
 export default class MenuMain extends Vue {
   showNameDialog = false;
@@ -119,11 +131,11 @@ export default class MenuMain extends Vue {
   roomName = "";
   roomPassword = "";
 
-  rooms: string[] = [];
+  rooms: RoomStatus[] = websocket.rooms();
 
   created() {
     websocket.on("YourData", this.personalDataReceived);
-    websocket.on("RoomJoined", this.roomJoined);
+    // websocket.on("RoomJoined", this.roomJoined);
     websocket.register();
   }
 
@@ -151,9 +163,8 @@ export default class MenuMain extends Vue {
     this.roomPassword = "";
   }
 
-  roomJoined(data: RoomJoined) {
-    this.rooms.push(data.room_name);
-    console.log(this.rooms.length == 0);
+  leaveRoom(roomName: string) {
+    websocket.leaveRoom(roomName);
   }
 }
 </script>
