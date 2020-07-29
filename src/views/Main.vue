@@ -1,36 +1,19 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-    <div id="participants">
-      <md-card md-with-hover>
-        <md-card-header>Some Header</md-card-header>
-        <md-card-content>Some Content</md-card-content>
-      </md-card>
-
-      <md-card>
-        <md-card-header>Some Header</md-card-header>
-        <md-card-content>Some Content</md-card-content>
-      </md-card>
-
-      <md-card>
-        <md-card-header>Some Header</md-card-header>
-        <md-card-content>Some Content</md-card-content>
-      </md-card>
-
-      <md-card>
-        <md-card-header>Some Header</md-card-header>
-        <md-card-content>Some Content</md-card-content>
-      </md-card>
-
-      <md-card>
-        <md-card-header>Some Header</md-card-header>
-        <md-card-content>Some Content</md-card-content>
-      </md-card>
-
-      <md-card>
-        <md-card-header>Some Header</md-card-header>
-        <md-card-content>Some Content</md-card-content>
-      </md-card>
+  <div class="main">
+    <div id="rooms">
+      <Room
+        v-for="room in rooms"
+        v-bind:key="room.room_name"
+        v-bind:roomName="room.room_name"
+      />
+      <md-empty-state
+        v-if="rooms.length == 0"
+        md-icon="new_releases"
+        md-label="Join a room"
+        md-description="To get the most of this website you should join a room, or create one. Do so by pressing the '+' over there."
+        md-rounded="true"
+      >
+      </md-empty-state>
     </div>
   </div>
 </template>
@@ -44,8 +27,11 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import websocket from "../../api/websocket";
-import router from "../router";
-@Component
+import Room from "@/components/Room.vue";
+import { RoomStatus } from "@/../api/data";
+
+@Component({ components: { Room } })
 export default class Main extends Vue {
+  rooms: RoomStatus[] = websocket.rooms();
 }
 </script>

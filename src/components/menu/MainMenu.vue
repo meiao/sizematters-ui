@@ -14,7 +14,7 @@
                       I will need your email for such.<br />
                       I promise I won't save/sell your email."
     />
-    <md-card>
+    <md-card md-with-hover>
       <md-card-content id="user-tag">
         <md-avatar id="user-avatar" md-avatar-icon md-small md-primary>
           <img
@@ -30,7 +30,7 @@
       </md-card-content>
     </md-card>
 
-    <div id="rooms">
+    <div id="menu-rooms">
       <header>
         Rooms
         <md-button
@@ -40,14 +40,13 @@
           <md-icon>add</md-icon>
         </md-button>
       </header>
-      <md-card v-if="rooms.length == 0">
+      <md-card v-if="rooms.length == 0" md-with-hover>
         <md-card-content>
-          You are not in any room.
-          <br />Click the "+" to join one.
+          Yes, the "+" over here
         </md-card-content>
       </md-card>
       <div id="room-list">
-        <md-card v-for="room in rooms" :key="room.room_name">
+        <md-card v-for="room in rooms" :key="room.room_name" md-with-hover>
           <md-card-header class="md-primary">
             <div class="md-title">{{ room.room_name }}</div>
           </md-card-header>
@@ -63,8 +62,17 @@
 
     <div>
       <md-dialog id="show-room-dialog" :md-active.sync="showRoomDialog">
-        <md-dialog-title>Join Room</md-dialog-title>
+        <md-dialog-title>Create/Join Room</md-dialog-title>
         <md-dialog-content>
+          <p>
+            If someone gave you a room name/password combination, just enter it
+            below to join that room.
+          </p>
+          <p>
+            Or type a new name and select a password to create your own room.
+            <br />
+            Then share it with your cow-orkers in order to have a size battle.
+          </p>
           <md-field>
             <label>Room Name</label>
             <md-input v-model="roomName"></md-input>
@@ -102,12 +110,16 @@
   }
 }
 
-#rooms {
+#menu-rooms {
   margin-top: 24px;
 
   header {
     display: flex;
     align-items: center;
+  }
+
+  #room-list .md-card + .md-card {
+    margin-top: 16px;
   }
 }
 </style>

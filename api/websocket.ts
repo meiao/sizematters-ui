@@ -37,9 +37,9 @@ function userLeft(userLeft: UserLeft) {
     }
   } else {
     const room = roomMap.get(roomName);
-    if (room !== undefined){
+    if (room !== undefined) {
       const usersInRoom = room.users;
-      const index = usersInRoom.findIndex( x => x.user_id == userLeft.user_id);
+      const index = usersInRoom.findIndex(x => x.user_id == userLeft.user_id);
       if (index !== undefined && index > -1) {
         usersInRoom.splice(index, 1);
       }
@@ -50,7 +50,7 @@ function userLeft(userLeft: UserLeft) {
 function processMessage(msg: MessageEvent) {
   const data = JSON.parse(msg.data);
   eventBus.$emit(data.type, data.data);
-console.log(data.type);
+
   if (data.type == "RoomJoined") {
     roomJoined(data.data);
   } else if (data.type == "UserLeft") {
@@ -127,7 +127,15 @@ export default {
     return rooms;
   },
 
+  room(roomName: string): RoomStatus | undefined {
+    return roomMap.get(roomName);
+  },
+
   users(): Map<string, UserData> {
     return users;
+  },
+
+  user(userId: string): UserData | undefined {
+    return users.get(userId);
   }
 };
