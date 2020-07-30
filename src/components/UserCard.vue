@@ -3,6 +3,9 @@
     <md-card-header>
       <div class="md-title">{{ userData.name }}</div>
     </md-card-header>
+    <md-card-media>
+      <Gravatar v-bind:gravatar="userData.gravatar_id" />
+    </md-card-media>
   </md-card>
 </template>
 
@@ -10,23 +13,19 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import websocket from "@/../api/websocket";
 import { UserData } from "@/../api/data";
+import Gravatar from "./Gravatar.vue";
 
-@Component
+@Component({ components: { Gravatar } })
 export default class UserCard extends Vue {
-  @Prop(String) userId = "";
-  userData: UserData | undefined;
-
-  created() {
-    this.userData = websocket.user(this.userId);
-  }
+  @Prop(String) userId: string;
+  userData: UserData | undefined = websocket.user(this.userId);
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .user-card {
-  max-width: 25%;
-  min-width: 20%;
+  width: 20%;
   overflow: hidden;
 }
 </style>

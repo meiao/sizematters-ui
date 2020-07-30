@@ -6,17 +6,18 @@
     <md-card-content class="user-space">
       <UserCard
         v-for="user in roomStatus.users"
-        v-bind:key="user.user_id"
-        v-bind:userId="user.user_id"
+        :key="user.user_id"
+        :userId="user.user_id"
         class="user"
       />
     </md-card-content>
-    <md-card-actions md-alignment="center">
+    <md-card-actions md-alignment="space-between">
       <md-button
-        class="md-icon-button md-accent md-raised"
+        class="md-icon-button md-raised vote-button"
         v-for="num in numbers"
-        v-bind:key="num"
-        @click="vote(num)"
+        :key="num"
+        :class="{ 'md-accent': vote == num, 'md-primary': vote != num }"
+        @click="castVote(num)"
       >
         {{ num }}
       </md-button>
@@ -32,9 +33,10 @@ import UserCard from "./UserCard.vue";
 
 @Component({ components: { UserCard } })
 export default class Room extends Vue {
-  @Prop(String) readonly roomName: string = "";
+  @Prop(String) readonly roomName: string;
 
   roomStatus: RoomStatus | undefined;
+  vote = -1;
 
   numbers: number[] = [0, 1, 2, 3, 5, 8, 13, 21];
 
@@ -43,8 +45,9 @@ export default class Room extends Vue {
     this.roomStatus = websocket.room("" + this.roomName);
   }
 
-  vote(value) {
-    console.log(value);
+  castVote(value) {
+    this.vote = value;
+    websocket.vote(this.roomName, value);
   }
 }
 </script>
@@ -74,6 +77,12 @@ export default class Room extends Vue {
     .user {
       margin: 16px 16px;
     }
+  }
+
+  .vote-button {
+    height: 60px;
+    width: 60px;
+    font-size: 22px;
   }
 }
 </style>

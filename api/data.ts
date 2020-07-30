@@ -14,3 +14,8 @@ export interface UserLeft {
   room_name: string;
   user_id: string;
 }
+
+export interface UserEntered {
+  room_name: string;
+  user: UserData;
+}

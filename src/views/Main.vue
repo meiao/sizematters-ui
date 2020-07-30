@@ -11,7 +11,7 @@
         md-icon="new_releases"
         md-label="Join a room"
         md-description="To get the most of this website you should join a room, or create one. Do so by pressing the '+' over there."
-        md-rounded="true"
+        md-rounded
       >
       </md-empty-state>
     </div>

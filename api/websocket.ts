@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { RoomStatus, UserData, UserLeft } from "api/data";
+import { RoomStatus, UserData, UserLeft, UserEntered } from "api/data";
 
 const eventBus = new Vue();
 
@@ -10,18 +10,35 @@ const rooms: RoomStatus[] = [];
 const roomMap: Map<string, RoomStatus> = new Map();
 const users: Map<string, UserData> = new Map();
 
+function userUpdated(updatedUser: UserData) {
+  const user = users.get(updatedUser.user_id);
+  if (user === undefined) {
+    users.set(updatedUser.user_id, updatedUser);
+  } else {
+    // eslint-disable-next-line
+    user.gravatar_id = updatedUser.gravatar_id;
+    user.name = updatedUser.name;
+  }
+}
+
 function yourData(userData: UserData) {
   userId = userData.user_id;
+  userUpdated(userData);
 }
 
 function roomJoined(roomStatus: RoomStatus) {
-  rooms.push(roomStatus);
   roomMap.set(roomStatus.room_name, roomStatus);
-  roomStatus.users.forEach(user => {
-    if (!users.has(user.user_id)) {
-      users.set(user.user_id, user);
-    }
-  });
+  roomStatus.users.forEach(user => userUpdated(user));
+  rooms.push(roomStatus);
+}
+
+function userEntered(userEntered: UserEntered) {
+  userUpdated(userEntered.user);
+  const room = roomMap.get(userEntered.room_name);
+  if (room !== undefined) {
+    const usersInRoom = room.users;
+    usersInRoom.push(userEntered.user);
+  }
 }
 
 function userLeft(userLeft: UserLeft) {
@@ -55,6 +72,10 @@ function processMessage(msg: MessageEvent) {
     roomJoined(data.data);
   } else if (data.type == "UserLeft") {
     userLeft(data.data);
+  } else if (data.type == "UserEntered") {
+    userEntered(data.data);
+  } else if (data.type == "UserUpdated") {
+    userUpdated(data.data.user);
   } else if (data.type == "YourData") {
     yourData(data.data.user);
   }
@@ -101,6 +122,11 @@ export default {
   leaveRoom(roomName: string) {
     // eslint-disable-next-line
     sendMessage("LeaveRoom", { "room_name": roomName });
+  },
+
+  vote(roomName: string, size: number) {
+    // eslint-disable-next-line
+    sendMessage("Vote", { "room_name": roomName, size: size });
   },
 
   register() {

@@ -24,7 +24,9 @@ const routes: Array<RouteConfig> = [
     components: {
       default: () => import(/* webpackChunkName: "main" */ "../views/Main.vue"),
       menu: () =>
-        import(/* webpackChunkName: "mainMenu" */ "../components/menu/MainMenu.vue")
+        import(
+          /* webpackChunkName: "mainMenu" */ "../components/menu/MainMenu.vue"
+        )
     }
   },
   {
