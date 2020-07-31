@@ -1,14 +1,31 @@
 import Vue from "vue";
-import { RoomStatus, UserData, UserLeft, UserEntered } from "api/data";
+import {
+  RoomStatus,
+  UserData,
+  UserLeft,
+  UserEntered,
+  UserVote,
+  BoxedNumber
+} from "./data";
 
 const eventBus = new Vue();
 
 let socket: WebSocket;
 
 let userId: string;
+const userVotes: Map<string, BoxedNumber> = new Map();
 const rooms: RoomStatus[] = [];
 const roomMap: Map<string, RoomStatus> = new Map();
 const users: Map<string, UserData> = new Map();
+
+function getRoom(roomName: string): RoomStatus {
+  let room = roomMap.get(roomName);
+  if (room === undefined) {
+    room = new RoomStatus();
+    roomMap.set(roomName, room);
+  }
+  return room;
+}
 
 function userUpdated(updatedUser: UserData) {
   const user = users.get(updatedUser.user_id);
@@ -21,9 +38,18 @@ function userUpdated(updatedUser: UserData) {
   }
 }
 
-function yourData(userData: UserData) {
+function userData(userData: UserData) {
   userId = userData.user_id;
   userUpdated(userData);
+}
+
+function userVote(userVote: UserVote) {
+  let vote = userVotes.get(userVote.room_name);
+  if (vote === undefined) {
+    vote = new BoxedNumber();
+    userVotes.set(userVote.room_name, vote);
+  }
+  vote.num = userVote.size;
 }
 
 function roomJoined(roomStatus: RoomStatus) {
@@ -46,6 +72,7 @@ function userLeft(userLeft: UserLeft) {
   if (userLeft.user_id == userId) {
     const room = roomMap.get(roomName);
     roomMap.delete(roomName);
+    userVotes.delete(roomName);
     if (room !== undefined) {
       const index = rooms.indexOf(room);
       if (index > -1) {
@@ -64,6 +91,12 @@ function userLeft(userLeft: UserLeft) {
   }
 }
 
+function votesCast(roomName: string, votesCast: number) {
+  const room = getRoom(roomName);
+  // eslint-disable-next-line
+  room.votes_cast = votesCast;
+}
+
 function processMessage(msg: MessageEvent) {
   const data = JSON.parse(msg.data);
   eventBus.$emit(data.type, data.data);
@@ -76,8 +109,14 @@ function processMessage(msg: MessageEvent) {
     userEntered(data.data);
   } else if (data.type == "UserUpdated") {
     userUpdated(data.data.user);
-  } else if (data.type == "YourData") {
-    yourData(data.data.user);
+  } else if (data.type == "UserVote") {
+    userVote(data.data);
+  } else if (data.type == "VotesCast") {
+    votesCast(data.data.room_name, data.data.votes_cast);
+  } else if (data.type == "UserData") {
+    userData(data.data.user);
+  } else {
+    console.log("message not handled:" + data.type);
   }
 }
 
@@ -153,8 +192,8 @@ export default {
     return rooms;
   },
 
-  room(roomName: string): RoomStatus | undefined {
-    return roomMap.get(roomName);
+  room(roomName: string): RoomStatus {
+    return getRoom(roomName);
   },
 
   users(): Map<string, UserData> {
@@ -163,5 +202,14 @@ export default {
 
   user(userId: string): UserData | undefined {
     return users.get(userId);
+  },
+
+  userVote(roomName: string): BoxedNumber {
+    let vote = userVotes.get(roomName);
+    if (vote === undefined) {
+      vote = new BoxedNumber();
+      userVotes.set(roomName, vote);
+    }
+    return vote;
   }
 };

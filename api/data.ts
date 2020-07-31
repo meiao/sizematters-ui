@@ -4,7 +4,7 @@ export interface UserData {
   gravatar_id: string;
 }
 
-export interface RoomStatus {
+export class RoomStatus {
   room_name: string;
   users: UserData[];
   votes_cast: number;
@@ -18,4 +18,17 @@ export interface UserLeft {
 export interface UserEntered {
   room_name: string;
   user: UserData;
+}
+
+export interface UserVote {
+  room_name: string;
+  size: number;
+}
+
+export class BoxedNumber {
+  num: number;
+
+  constructor() {
+    this.num = -1;
+  }
 }
