@@ -9,6 +9,7 @@
         :key="user.user_id"
         :userId="user.user_id"
         class="user"
+        :class="{ 'show-vote': votingDone }"
       />
     </md-card-content>
     <md-card-actions md-alignment="space-between">
@@ -24,6 +25,13 @@
       >
         {{ num }}
       </md-button>
+      <md-button
+        class="md-accent md-raised"
+        v-if="votingDone"
+        @click="requestNewVote"
+      >
+        New vote
+      </md-button>
     </md-card-actions>
   </md-card>
 </template>
@@ -32,6 +40,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import websocket from "@/../api/websocket";
 import UserCard from "./UserCard.vue";
+import { RoomName } from "../../api/data";
 
 @Component({ components: { UserCard } })
 export default class Room extends Vue {
@@ -39,11 +48,33 @@ export default class Room extends Vue {
 
   roomStatus = websocket.room(this.roomName);
   vote = websocket.userVote(this.roomName);
+  votingDone = false;
 
   numbers: number[] = [0, 1, 2, 3, 5, 8, 13, 21];
 
+  onVotingResults(roomName: RoomName) {
+    if (this.roomName == roomName.room_name) {
+      this.votingDone = true;
+    }
+  }
+
+  onNewVote(roomName: RoomName) {
+    if (this.roomName == roomName.room_name) {
+      this.votingDone = false;
+    }
+  }
+
+  created() {
+    websocket.on("VoteResults", this.onVotingResults);
+    websocket.on("NewVote", this.onNewVote);
+  }
+
   castVote(value) {
     websocket.vote(this.roomName, value);
+  }
+
+  requestNewVote() {
+    websocket.newVote(this.roomName);
   }
 }
 </script>

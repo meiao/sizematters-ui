@@ -43,12 +43,17 @@ function userData(userData: UserData) {
   userUpdated(userData);
 }
 
-function userVote(userVote: UserVote) {
-  let vote = userVotes.get(userVote.room_name);
+function getVote(roomName: string): BoxedNumber {
+  let vote = userVotes.get(roomName);
   if (vote === undefined) {
     vote = new BoxedNumber();
-    userVotes.set(userVote.room_name, vote);
+    userVotes.set(roomName, vote);
   }
+  return vote;
+}
+
+function userVote(userVote: UserVote) {
+  const vote = getVote(userVote.room_name);
   vote.num = userVote.size;
 }
 
@@ -97,26 +102,43 @@ function votesCast(roomName: string, votesCast: number) {
   room.votes_cast = votesCast;
 }
 
+function newVote(roomName: string) {
+  const vote = getVote(roomName);
+  vote.num = -1;
+  // eslint-disable-next-line
+  getRoom(roomName).votes_cast = 0;
+}
+
 function processMessage(msg: MessageEvent) {
   const data = JSON.parse(msg.data);
   eventBus.$emit(data.type, data.data);
-
-  if (data.type == "RoomJoined") {
-    roomJoined(data.data);
-  } else if (data.type == "UserLeft") {
-    userLeft(data.data);
-  } else if (data.type == "UserEntered") {
-    userEntered(data.data);
-  } else if (data.type == "UserUpdated") {
-    userUpdated(data.data.user);
-  } else if (data.type == "UserVote") {
-    userVote(data.data);
-  } else if (data.type == "VotesCast") {
-    votesCast(data.data.room_name, data.data.votes_cast);
-  } else if (data.type == "UserData") {
-    userData(data.data.user);
-  } else {
-    console.log("message not handled:" + data.type);
+  switch (data.type) {
+    case "RoomJoined":
+      roomJoined(data.data);
+      break;
+    case "UserLeft":
+      userLeft(data.data);
+      break;
+    case "UserEntered":
+      userEntered(data.data);
+      break;
+    case "UserUpdated":
+      userUpdated(data.data.user);
+      break;
+    case "UserVote":
+      userVote(data.data);
+      break;
+    case "VotesCast":
+      votesCast(data.data.room_name, data.data.votes_cast);
+      break;
+    case "NewVote":
+      newVote(data.data.room_name);
+      break;
+    case "UserData":
+      userData(data.data.user);
+      break;
+    default:
+      console.log("message not handled:" + data.type);
   }
 }
 
@@ -166,6 +188,11 @@ export default {
   vote(roomName: string, size: number) {
     // eslint-disable-next-line
     sendMessage("Vote", { "room_name": roomName, size: size });
+  },
+
+  newVote(roomName: string) {
+    // eslint-disable-next-line
+    sendMessage("NewVote", { "room_name": roomName })
   },
 
   register() {

@@ -32,3 +32,12 @@ export class BoxedNumber {
     this.num = -1;
   }
 }
+
+export interface VoteResults {
+  room_name: string;
+  votes: Map<string, number>;
+}
+
+export interface RoomName {
+  room_name: string;
+}
