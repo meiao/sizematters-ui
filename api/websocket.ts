@@ -5,7 +5,8 @@ import {
   UserLeft,
   UserEntered,
   UserVote,
-  BoxedNumber
+  BoxedNumber,
+  VoteResults
 } from "./data";
 
 const eventBus = new Vue();
@@ -13,10 +14,10 @@ const eventBus = new Vue();
 let socket: WebSocket;
 
 let userId: string;
-const userVotes: Map<string, BoxedNumber> = new Map();
 const rooms: RoomStatus[] = [];
 const roomMap: Map<string, RoomStatus> = new Map();
 const users: Map<string, UserData> = new Map();
+const votes: Map<string, Map<string, BoxedNumber>> = new Map();
 
 function getRoom(roomName: string): RoomStatus {
   let room = roomMap.get(roomName);
@@ -43,17 +44,28 @@ function userData(userData: UserData) {
   userUpdated(userData);
 }
 
-function getVote(roomName: string): BoxedNumber {
-  let vote = userVotes.get(roomName);
+function getRoomVotes(roomName: string): Map<string, BoxedNumber> {
+  let roomVotes = votes.get(roomName);
+  if (roomVotes === undefined) {
+    roomVotes = new Map();
+    votes.set(roomName, roomVotes);
+  }
+  return roomVotes;
+}
+
+function getUserVote(roomName: string, userId: string): BoxedNumber {
+  const roomVotes = getRoomVotes(roomName);
+
+  let vote = roomVotes.get(userId);
   if (vote === undefined) {
     vote = new BoxedNumber();
-    userVotes.set(roomName, vote);
+    roomVotes.set(userId, vote);
   }
   return vote;
 }
 
 function userVote(userVote: UserVote) {
-  const vote = getVote(userVote.room_name);
+  const vote = getUserVote(userVote.room_name, userId);
   vote.num = userVote.size;
 }
 
@@ -77,7 +89,7 @@ function userLeft(userLeft: UserLeft) {
   if (userLeft.user_id == userId) {
     const room = roomMap.get(roomName);
     roomMap.delete(roomName);
-    userVotes.delete(roomName);
+    votes.delete(roomName);
     if (room !== undefined) {
       const index = rooms.indexOf(room);
       if (index > -1) {
@@ -103,10 +115,18 @@ function votesCast(roomName: string, votesCast: number) {
 }
 
 function newVote(roomName: string) {
-  const vote = getVote(roomName);
-  vote.num = -1;
+  const roomVs = getRoomVotes(roomName);
+  roomVs.forEach(vote => vote.num = -1);
   // eslint-disable-next-line
   getRoom(roomName).votes_cast = 0;
+}
+
+function voteResults(voteResults: VoteResults) {
+  const votesFromServer = voteResults.votes;
+  Object.keys(votesFromServer).forEach(userId => {
+    getUserVote(voteResults.room_name, userId).num = votesFromServer[userId];
+  });
+  console.log(votes);
 }
 
 function processMessage(msg: MessageEvent) {
@@ -133,6 +153,9 @@ function processMessage(msg: MessageEvent) {
       break;
     case "NewVote":
       newVote(data.data.room_name);
+      break;
+    case "VoteResults":
+      voteResults(data.data);
       break;
     case "UserData":
       userData(data.data.user);
@@ -170,7 +193,7 @@ export default {
   },
 
   connect(successCallback: Function, failureCallback: Function) {
-    socket = new WebSocket("ws://localhost:9001");
+    socket = new WebSocket("wss://ws.sizematters.dev");
     socket.onmessage = msg => processMessage(msg);
     checkConnection(successCallback, failureCallback);
   },
@@ -231,12 +254,11 @@ export default {
     return users.get(userId);
   },
 
-  userVote(roomName: string): BoxedNumber {
-    let vote = userVotes.get(roomName);
-    if (vote === undefined) {
-      vote = new BoxedNumber();
-      userVotes.set(roomName, vote);
-    }
-    return vote;
+  voteForUser(roomName: string, userId: string) {
+    return getUserVote(roomName, userId);
+  },
+
+  voteForCurrentUser(roomName: string) {
+    return this.voteForUser(roomName, userId);
   }
 };

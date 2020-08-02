@@ -35,7 +35,7 @@ export class BoxedNumber {
 
 export interface VoteResults {
   room_name: string;
-  votes: Map<string, number>;
+  votes: Record<string, number>;
 }
 
 export interface RoomName {

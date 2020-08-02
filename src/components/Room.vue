@@ -8,6 +8,7 @@
         v-for="user in roomStatus.users"
         :key="user.user_id"
         :userId="user.user_id"
+        :roomName="roomName"
         class="user"
         :class="{ 'show-vote': votingDone }"
       />
@@ -18,8 +19,8 @@
         v-for="num in numbers"
         :key="num"
         :class="{
-          'md-accent': vote['num'] == num,
-          'md-primary': vote['num'] != num
+          'md-accent': vote.num == num,
+          'md-primary': vote.num != num
         }"
         @click="castVote(num)"
       >
@@ -47,7 +48,7 @@ export default class Room extends Vue {
   @Prop(String) readonly roomName: string;
 
   roomStatus = websocket.room(this.roomName);
-  vote = websocket.userVote(this.roomName);
+  vote = websocket.voteForCurrentUser(this.roomName);
   votingDone = false;
 
   numbers: number[] = [0, 1, 2, 3, 5, 8, 13, 21];
