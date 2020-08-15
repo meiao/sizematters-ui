@@ -10,17 +10,17 @@ export class RoomStatus {
   votes_cast: number;
 }
 
-export interface UserLeft {
+export interface UserIdRoom {
   room_name: string;
   user_id: string;
 }
 
-export interface UserEntered {
+export interface UserRoom {
   room_name: string;
   user: UserData;
 }
 
-export interface UserVote {
+export interface OwnVote {
   room_name: string;
   size: number;
 }

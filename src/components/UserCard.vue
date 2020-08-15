@@ -1,5 +1,5 @@
 <template>
-  <md-card class="user-card">
+  <md-card class="user-card" :class="{ 'has-voted': userVote.num != -1 }">
     <md-card-header>
       <div class="md-title">{{ userData.name }}</div>
     </md-card-header>
@@ -12,8 +12,9 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import websocket from "@/../api/websocket";
 import { UserData } from "@/../api/data";
+import voteStore from "@/../api/vote.store";
+import userStore from "@/../api/user.store";
 import Gravatar from "./Gravatar.vue";
 
 @Component({ components: { Gravatar } })
@@ -21,15 +22,15 @@ export default class UserCard extends Vue {
   @Prop(String) userId: string;
   @Prop(String) roomName: string;
 
-  userData: UserData | undefined = websocket.user(this.userId);
-  userVote = websocket.voteForUser(this.roomName, this.userId);
+  userData: UserData | undefined = userStore.user(this.userId);
+  userVote = voteStore.userVote(this.roomName, this.userId);
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .user-card {
-  width: 20%;
+  flex: 1 1 15%;
   overflow: hidden;
 
   .user-pic {
@@ -53,7 +54,7 @@ export default class UserCard extends Vue {
     transition: 1s ease-in-out;
   }
 
-  &.show-vote {
+  &.has-voted.show-vote {
     .user-pic {
       transform: rotateY(900deg);
     }

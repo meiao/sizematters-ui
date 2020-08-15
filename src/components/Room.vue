@@ -42,13 +42,15 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import websocket from "@/../api/websocket";
 import UserCard from "./UserCard.vue";
 import { RoomName } from "../../api/data";
+import roomStore from "@/../api/room.store";
+import voteStore from "@/../api/vote.store";
 
 @Component({ components: { UserCard } })
 export default class Room extends Vue {
   @Prop(String) readonly roomName: string;
 
-  roomStatus = websocket.room(this.roomName);
-  vote = websocket.voteForCurrentUser(this.roomName);
+  roomStatus = roomStore.room(this.roomName);
+  vote = voteStore.ownVote(this.roomName);
   votingDone = false;
 
   numbers: number[] = [0, 1, 2, 3, 5, 8, 13, 21];
@@ -103,7 +105,7 @@ export default class Room extends Vue {
     justify-content: space-evenly;
 
     .user {
-      margin: 16px 16px;
+      margin: 8px 8px;
     }
   }
 

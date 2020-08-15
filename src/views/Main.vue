@@ -26,12 +26,12 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import websocket from "../../api/websocket";
+import roomStore from "@/../api/room.store";
 import Room from "@/components/Room.vue";
 import { RoomStatus } from "@/../api/data";
 
 @Component({ components: { Room } })
 export default class Main extends Vue {
-  rooms: RoomStatus[] = websocket.rooms();
+  rooms: RoomStatus[] = roomStore.rooms();
 }
 </script>

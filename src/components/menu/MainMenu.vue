@@ -128,6 +128,8 @@
 import { Component, Vue } from "vue-property-decorator";
 import websocket from "../../../api/websocket";
 import { UserData, RoomStatus } from "../../../api/data";
+import roomStore from "@/../api/room.store";
+
 @Component
 export default class MenuMain extends Vue {
   showNameDialog = false;
@@ -143,7 +145,7 @@ export default class MenuMain extends Vue {
   roomName = "";
   roomPassword = "";
 
-  rooms: RoomStatus[] = websocket.rooms();
+  rooms: RoomStatus[] = roomStore.rooms();
 
   created() {
     websocket.on("UserData", this.personalDataReceived);
