@@ -30,7 +30,7 @@ export default class UserCard extends Vue {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .user-card {
-  flex: 1 1 15%;
+  flex: 0 0 15%;
   overflow: hidden;
 
   .user-pic {

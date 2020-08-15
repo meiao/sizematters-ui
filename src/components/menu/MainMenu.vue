@@ -148,7 +148,7 @@ export default class MenuMain extends Vue {
   rooms: RoomStatus[] = roomStore.rooms();
 
   created() {
-    websocket.on("UserData", this.personalDataReceived);
+    websocket.on("OwnData", this.personalDataReceived);
     websocket.register();
   }
 

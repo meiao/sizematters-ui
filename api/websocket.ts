@@ -56,8 +56,30 @@ function sendMessage(type: string, content) {
   socket.send(msg);
 }
 
+function setName(name: string) {
+  sendMessage("SetName", { name: name });
+  localStorage.setItem("name", name);
+}
+
+function setAvatar(email: string) {
+  sendMessage("SetAvatar", { avatar: email });
+  localStorage.setItem("avatar", email);
+}
+
+function restoreData() {
+  const name = localStorage.getItem("name");
+  if (name !== null) {
+    setName(name);
+  }
+  const avatar = localStorage.getItem("avatar");
+  if (avatar !== null) {
+    setAvatar(avatar);
+  }
+}
+
 function checkConnection(successCallback: Function, failureCallback: Function) {
   if (socket.readyState == WebSocket.OPEN) {
+    restoreData();
     successCallback();
   } else if (socket.readyState == WebSocket.CONNECTING) {
     setTimeout(() => checkConnection(successCallback, failureCallback), 250);
@@ -106,11 +128,11 @@ export default {
   },
 
   setAvatar(email: string) {
-    sendMessage("SetAvatar", { avatar: email });
+    setAvatar(email);
   },
 
   setName(name: string) {
-    sendMessage("SetName", { name: name });
+    setName(name);
   },
 
   on(event: string, callback: Function) {
