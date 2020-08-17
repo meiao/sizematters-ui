@@ -33,6 +33,17 @@ export default class UserCard extends Vue {
   flex: 0 0 15%;
   overflow: hidden;
 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .md-card-header {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
   .user-pic {
     backface-visibility: hidden;
     transition: 1s ease-in-out;
