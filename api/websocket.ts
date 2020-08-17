@@ -11,18 +11,18 @@ function processMessage(msg: MessageEvent) {
   eventBus.$emit(data.type, data.data);
   switch (data.type) {
     case "RoomJoined":
-      roomStore.roomJoined(data.data);
       userStore.roomJoined(data.data);
       voteStore.roomJoined(data.data);
+      roomStore.roomJoined(data.data);
       break;
     case "UserLeft":
-      roomStore.userLeft(data.data);
       voteStore.userLeft(data.data);
+      roomStore.userLeft(data.data);
       break;
     case "UserJoined":
-      roomStore.userJoined(data.data);
-      userStore.userUpdated(data.data);
+      userStore.userUpdated(data.data.user);
       voteStore.userJoined(data.data);
+      roomStore.userJoined(data.data);
       break;
     case "UserUpdated":
       userStore.userUpdated(data.data.user);
