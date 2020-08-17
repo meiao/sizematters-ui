@@ -1,4 +1,4 @@
-import { UserData, RoomStatus, UserRoom } from "./data";
+import { UserData, RoomStatus } from "./data";
 
 const users: Map<string, UserData> = new Map();
 let ownUserId = "Not set";
@@ -40,8 +40,8 @@ export default {
     roomJoined(roomStatus);
   },
 
-  userUpdated(userData: UserRoom) {
-    userUpdated(userData.user);
+  userUpdated(userData: UserData) {
+    userUpdated(userData);
   },
 
   ownData(userData: UserData) {
