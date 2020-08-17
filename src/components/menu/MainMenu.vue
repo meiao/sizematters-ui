@@ -170,7 +170,7 @@ export default class MenuMain extends Vue {
   }
 
   joinRoom() {
-    websocket.joinRoom(this.roomName, this.roomPassword);
+    websocket.joinRoom(this.roomName, this.roomPassword, false);
     this.showRoomDialog = false;
     this.roomName = "";
     this.roomPassword = "";

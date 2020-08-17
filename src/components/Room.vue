@@ -1,7 +1,11 @@
 <template>
   <md-card class="room">
     <md-card-header class="header">
-      <div class="md-title">{{ roomName }}</div>
+      <div class="md-title">
+        {{ roomName }} - https://sizematters.dev/room/{{ roomName }}/{{
+          roomStatus.hashed_password
+        }}
+      </div>
     </md-card-header>
     <md-card-content class="user-space">
       <UserCard

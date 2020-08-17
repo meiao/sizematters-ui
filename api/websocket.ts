@@ -103,9 +103,9 @@ export default {
     checkConnection(successCallback, failureCallback);
   },
 
-  joinRoom(roomName: string, password: string) {
+  joinRoom(roomName: string, password: string, passwordIsHash: boolean) {
     // eslint-disable-next-line
-    sendMessage("JoinRoom", { "room_name": roomName, "password": password });
+    sendMessage("JoinRoom", { "room_name": roomName, "password": password, "password_is_hash": passwordIsHash });
   },
 
   leaveRoom(roomName: string) {

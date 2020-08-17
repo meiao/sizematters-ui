@@ -6,6 +6,7 @@ export interface UserData {
 
 export class RoomStatus {
   room_name: string;
+  hashed_password: string;
   users: UserData[];
   votes_cast: number;
 }

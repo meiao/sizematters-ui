@@ -30,6 +30,17 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
+    path: "/room/:roomName/:password",
+    components: {
+      default: () => import(/* webpackChunkName: "main" */ "../views/Connecting.vue"),
+      menu: () =>
+        import(
+          /* webpackChunkName: "mainMenu" */ "../components/menu/MainMenu.vue"
+        )
+    },
+    props: { default: true, menu: false }
+  },
+  {
     path: "/error/:type",
     name: "error",
     components: {
