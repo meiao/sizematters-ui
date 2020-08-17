@@ -54,7 +54,7 @@ export default class Room extends Vue {
   @Prop(String) readonly roomName: string;
 
   roomStatus = roomStore.room(this.roomName);
-  vote = voteStore.ownVote(this.roomName);
+  vote = voteStore.getOwnVote(this.roomName);
   votingDone = false;
 
   numbers: number[] = [0, 1, 2, 3, 5, 8, 13, 21];

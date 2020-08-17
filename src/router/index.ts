@@ -32,11 +32,9 @@ const routes: Array<RouteConfig> = [
   {
     path: "/room/:roomName/:password",
     components: {
-      default: () => import(/* webpackChunkName: "main" */ "../views/Connecting.vue"),
-      menu: () =>
-        import(
-          /* webpackChunkName: "mainMenu" */ "../components/menu/MainMenu.vue"
-        )
+      default: () =>
+        import(/* webpackChunkName: "main" */ "../views/Connecting.vue"),
+      menu: NoMenu
     },
     props: { default: true, menu: false }
   },

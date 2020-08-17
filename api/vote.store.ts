@@ -3,7 +3,8 @@ import {
   VoteResults,
   RoomStatus,
   UserIdRoom,
-  UserRoom
+  UserRoom,
+  OwnVote
 } from "./data";
 
 import userStore from "./user.store";
@@ -48,8 +49,8 @@ function roomJoined(roomStatus: RoomStatus) {
   );
 }
 
-function ownVote(roomName: string): BoxedNumber {
-  return userVote(roomName, userStore.userId());
+function ownVote(vote: OwnVote) {
+  userVote(vote.room_name, userStore.userId()).num = vote.size;
 }
 
 function userLeft(data: UserIdRoom) {
@@ -66,8 +67,12 @@ export default {
     return userVote(roomName, userId);
   },
 
-  ownVote(roomName: string) {
-    return ownVote(roomName);
+  ownVote(vote: OwnVote) {
+    return ownVote(vote);
+  },
+
+  getOwnVote(roomName: string) {
+    return userVote(roomName, userStore.userId());
   },
 
   roomJoined(roomStatus: RoomStatus) {
