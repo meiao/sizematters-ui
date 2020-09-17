@@ -23,8 +23,8 @@
         v-for="num in numbers"
         :key="num"
         :class="{
-          'md-accent': vote.num == num,
-          'md-primary': vote.num != num
+          'md-accent': vote.value == num,
+          'md-primary': vote.value != num
         }"
         @click="castVote(num)"
       >

@@ -26,11 +26,13 @@ export interface OwnVote {
   size: number;
 }
 
-export class BoxedNumber {
-  num: number;
+export class Vote {
+  value: number | undefined;
+  hasVoted: boolean;
 
   constructor() {
-    this.num = -1;
+    this.hasVoted = false;
+    this.value = undefined;
   }
 }
 

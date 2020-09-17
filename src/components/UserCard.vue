@@ -1,11 +1,17 @@
 <template>
-  <md-card class="user-card" :class="{ 'has-voted': userVote.num != -1 }">
+  <md-card class="user-card" :class="{ 'has-voted': userVote.hasVoted }">
     <md-card-header>
-      <div class="md-title">{{ userData.name }}</div>
+      <div class="md-title">
+        <span class="name">{{ userData.name }}</span>
+        <span class="vote-badge">
+          <md-icon class="voted">check</md-icon>
+          <md-icon class="not-voted">help</md-icon>
+        </span>
+      </div>
     </md-card-header>
     <md-card-media>
       <Gravatar v-bind:gravatar="userData.gravatar_id" class="user-pic" />
-      <div class="user-size">{{ userVote.num }}</div>
+      <div class="user-size">{{ userVote.value }}</div>
     </md-card-media>
   </md-card>
 </template>
@@ -72,6 +78,29 @@ export default class UserCard extends Vue {
     .user-size {
       transform: rotateY(1080deg);
     }
+  }
+
+  .vote-badge i {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    &.voted {
+      color: green;
+    }
+
+    &.not-voted {
+      color: red;
+    }
+  }
+
+  &.has-voted .vote-badge .voted {
+    display: block;
+  }
+
+  &:not(.has-voted) .vote-badge .not-voted {
+    display: block;
   }
 }
 </style>

@@ -30,8 +30,9 @@ function processMessage(msg: MessageEvent) {
     case "OwnVote":
       voteStore.ownVote(data.data);
       break;
-    case "VotesCast":
-      roomStore.votesCast(data.data.room_name, data.data.votes_cast);
+    case "VoteStatus":
+      roomStore.voteStatus(data.data.room_name, data.data.votes);
+      voteStore.voteStatus(data.data.room_name, data.data.votes);
       break;
     case "NewVote":
       roomStore.newVote(data.data.room_name);

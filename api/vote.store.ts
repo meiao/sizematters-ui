@@ -1,5 +1,5 @@
 import {
-  BoxedNumber,
+  Vote,
   VoteResults,
   RoomStatus,
   UserIdRoom,
@@ -9,9 +9,9 @@ import {
 
 import userStore from "./user.store";
 
-const votes: Map<string, Map<string, BoxedNumber>> = new Map();
+const votes: Map<string, Map<string, Vote>> = new Map();
 
-function roomVotes(roomName: string): Map<string, BoxedNumber> {
+function roomVotes(roomName: string): Map<string, Vote> {
   let roomVotes = votes.get(roomName);
   if (roomVotes === undefined) {
     roomVotes = new Map();
@@ -20,12 +20,12 @@ function roomVotes(roomName: string): Map<string, BoxedNumber> {
   return roomVotes;
 }
 
-function userVote(roomName: string, userId: string): BoxedNumber {
+function userVote(roomName: string, userId: string): Vote {
   const roomVs = roomVotes(roomName);
 
   let vote = roomVs.get(userId);
   if (vote === undefined) {
-    vote = new BoxedNumber();
+    vote = new Vote();
     roomVs.set(userId, vote);
   }
   return vote;
@@ -33,13 +33,24 @@ function userVote(roomName: string, userId: string): BoxedNumber {
 
 function newVote(roomName: string) {
   const roomVs = roomVotes(roomName);
-  roomVs.forEach(vote => (vote.num = -1));
+  roomVs.forEach(vote => {
+    vote.value = undefined;
+    vote.hasVoted = false;
+  });
+}
+
+function voteStatus(roomName: string, votes: Map<string, boolean>) {
+  Object.keys(votes).forEach(
+    userId => (userVote(roomName, userId).hasVoted = votes[userId])
+  );
 }
 
 function voteResults(voteResults: VoteResults) {
   const votesFromServer = voteResults.votes;
   Object.keys(votesFromServer).forEach(userId => {
-    userVote(voteResults.room_name, userId).num = votesFromServer[userId];
+    const vote = userVote(voteResults.room_name, userId);
+    vote.value = votesFromServer[userId];
+    vote.hasVoted = true;
   });
 }
 
@@ -50,7 +61,9 @@ function roomJoined(roomStatus: RoomStatus) {
 }
 
 function ownVote(vote: OwnVote) {
-  userVote(vote.room_name, userStore.userId()).num = vote.size;
+  const myVote = userVote(vote.room_name, userStore.userId());
+  myVote.value = vote.size;
+  myVote.hasVoted = true;
 }
 
 function userLeft(data: UserIdRoom) {
@@ -89,6 +102,10 @@ export default {
 
   newVote(roomName: string) {
     newVote(roomName);
+  },
+
+  voteStatus(roomName: string, votes: Map<string, boolean>) {
+    voteStatus(roomName, votes);
   },
 
   voteResults(votes: VoteResults) {

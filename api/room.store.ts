@@ -50,8 +50,15 @@ function userLeft(userLeft: UserIdRoom) {
   }
 }
 
-function votesCast(roomName: string, voteCount: number) {
+function voteStatus(roomName: string, votes: Record<string, boolean>) {
   const room = getRoom(roomName);
+  let voteCount = 0;
+  Object.keys(votes).forEach(userId => {
+    if (votes[userId]) {
+      voteCount++;
+    }
+  });
+
   // eslint-disable-next-line
   room.votes_cast = voteCount;
 }
@@ -83,8 +90,8 @@ export default {
     userLeft(userData);
   },
 
-  votesCast(roomName: string, voteCount: number) {
-    votesCast(roomName, voteCount);
+  voteStatus(roomName: string, voteCount: Record<string, boolean>) {
+    voteStatus(roomName, voteCount);
   },
 
   newVote(roomName: string) {
