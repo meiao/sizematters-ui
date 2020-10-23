@@ -1,5 +1,9 @@
 <template>
-  <md-card class="user-card" :class="{ 'has-voted': userVote.hasVoted }">
+  <md-card
+    class="user-card"
+    :class="{ 'has-voted': userVote.hasVoted }"
+    :style="{ order: this.calculateOrder(this.userData.name) }"
+  >
     <md-card-header>
       <div class="md-title">
         <span class="name">{{ userData.name }}</span>
@@ -30,13 +34,31 @@ export default class UserCard extends Vue {
 
   userData: UserData | undefined = userStore.user(this.userId);
   userVote = voteStore.userVote(this.roomName, this.userId);
+
+  /*
+   * Hack to set the order in flex. Uses the "ASCII" representation of the number
+   * normalized so a = 11 and names with less letters are padded with trailing 10s.
+   * Can use at most 4 characters because of the limit on the max number for order.
+   */
+  calculateOrder(name: string) {
+    const baseCharCode = "a".charCodeAt(0);
+    const nameToUse =
+      name.length > 4
+        ? name.toLowerCase().substring(0, 4)
+        : name.toLowerCase().padEnd(4, String.fromCharCode(baseCharCode - 1));
+    return nameToUse
+      .split("")
+      .map(c => c.charCodeAt(0) - baseCharCode + 11)
+      .map(n => n.toString())
+      .join("");
+  }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .user-card {
-  flex: 0 0 15%;
+  flex: 0 0 150px;
   overflow: hidden;
 
   display: flex;
