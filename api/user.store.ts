@@ -1,7 +1,8 @@
-import { UserData, RoomStatus } from "./data";
+import { UserData, RoomStatus, BoxedValue } from "./data";
 
 const users: Map<string, UserData> = new Map();
 let ownUserId = "Not set";
+const nameSet = new BoxedValue(false);
 
 function userUpdated(updatedUser: UserData) {
   const user = users.get(updatedUser.user_id);
@@ -21,6 +22,14 @@ function roomJoined(roomStatus: RoomStatus) {
 function ownData(userData: UserData) {
   ownUserId = userData.user_id;
   userUpdated(userData);
+}
+
+function isNameSet(): BoxedValue<boolean> {
+  return nameSet;
+}
+
+function setNameSet() {
+  nameSet.value = true;
 }
 
 export default {
@@ -46,5 +55,13 @@ export default {
 
   ownData(userData: UserData) {
     ownData(userData);
+  },
+
+  isNameSet(): BoxedValue<boolean> {
+    return isNameSet();
+  },
+
+  setNameSet() {
+    setNameSet();
   }
 };

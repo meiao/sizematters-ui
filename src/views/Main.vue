@@ -1,5 +1,15 @@
 <template>
   <div class="main">
+    <md-card id="change-name-alert" v-if="!nameSet.value">
+      <md-card-content>
+        <md-icon>arrow_back</md-icon>
+        <div>
+          Hi <b>Shirtless Muppet</b>.<br />
+          You can change your name by clicking it here to the left.
+        </div>
+      </md-card-content>
+    </md-card>
+
     <div id="rooms">
       <Room
         v-for="room in rooms"
@@ -19,6 +29,29 @@
 </template>
 
 <style lang="scss">
+.main {
+  position: relative;
+}
+
+#change-name-alert {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  z-index: 10;
+
+  .md-card-content {
+    display: flex;
+    text-align: left;
+
+    .md-icon {
+      flex-grow: 0;
+      margin-left: -8px;
+      margin-right: 8px;
+    }
+  }
+}
+
 #participants {
   display: flex;
 }
@@ -28,10 +61,12 @@
 import { Component, Vue } from "vue-property-decorator";
 import roomStore from "@/../api/room.store";
 import Room from "@/components/Room.vue";
-import { RoomStatus } from "@/../api/data";
+import { BoxedValue, RoomStatus } from "@/../api/data";
+import userStore from "@/../api/user.store";
 
 @Component({ components: { Room } })
 export default class Main extends Vue {
   rooms: RoomStatus[] = roomStore.rooms();
+  nameSet: BoxedValue<boolean> = userStore.isNameSet();
 }
 </script>

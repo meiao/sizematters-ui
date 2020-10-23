@@ -60,6 +60,7 @@ function sendMessage(type: string, content) {
 function setName(name: string) {
   sendMessage("SetName", { name: name });
   localStorage.setItem("name", name);
+  userStore.setNameSet();
 }
 
 function setAvatar(email: string) {

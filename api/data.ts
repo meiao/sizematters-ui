@@ -44,3 +44,11 @@ export interface VoteResults {
 export interface RoomName {
   room_name: string;
 }
+
+export class BoxedValue<T> {
+  value: T;
+
+  constructor(value: T) {
+    this.value = value;
+  }
+}
