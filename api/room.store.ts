@@ -69,6 +69,12 @@ function newVote(roomName: string) {
   room.votes_cast = 0;
 }
 
+function randomized(roomName: string, selectedUser: string) {
+  const room = getRoom(roomName);
+  // eslint-disable-next-line
+  room.selected_user = selectedUser;
+}
+
 export default {
   rooms(): Array<RoomStatus> {
     return rooms;
@@ -96,5 +102,9 @@ export default {
 
   newVote(roomName: string) {
     newVote(roomName);
+  },
+
+  randomized(roomName: string, selectedUser: string) {
+    randomized(roomName, selectedUser);
   }
 };
