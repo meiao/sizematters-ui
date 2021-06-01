@@ -14,7 +14,10 @@
         :userId="user.user_id"
         :roomName="roomName"
         class="user"
-        :class="{ 'show-vote': votingDone }"
+        :class="{
+          'show-vote': votingDone,
+          'user-selected': selected == user.user_id
+        }"
       />
     </md-card-content>
     <md-card-actions md-alignment="space-between">
@@ -33,9 +36,16 @@
       <md-button
         class="md-accent md-raised"
         v-if="votingDone"
+        @click="randomize"
+      >
+        Randomize
+      </md-button>
+      <md-button
+        class="md-accent md-raised"
+        v-if="votingDone"
         @click="requestNewVote"
       >
-        New vote
+        New vote!
       </md-button>
     </md-card-actions>
   </md-card>
@@ -45,7 +55,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import websocket from "@/../api/websocket";
 import UserCard from "./UserCard.vue";
-import { RoomName } from "../../api/data";
+import { RoomData } from "../../api/data";
 import roomStore from "@/../api/room.store";
 import voteStore from "@/../api/vote.store";
 
@@ -55,25 +65,44 @@ export default class Room extends Vue {
 
   roomStatus = roomStore.room(this.roomName);
   vote = voteStore.getOwnVote(this.roomName);
+  selected = "";
   votingDone = false;
 
   numbers: number[] = [0, 1, 2, 3, 5, 8, 13, 21];
 
-  onVotingResults(roomName: RoomName) {
-    if (this.roomName == roomName.room_name) {
+  onVotingResults(roomData: RoomData) {
+    if (this.roomName == roomData.room_name) {
       this.votingDone = true;
     }
   }
 
-  onNewVote(roomName: RoomName) {
-    if (this.roomName == roomName.room_name) {
+  onNewVote(roomData: RoomData) {
+    if (this.roomName == roomData.room_name) {
       this.votingDone = false;
+      this.selected = "";
+    }
+  }
+
+  onRandomized(roomData: RoomData) {
+    if (this.roomName == roomData.room_name) {
+      this.selected = roomData.selected_user_id;
+      if ("speechSynthesis" in window) {
+        this.roomStatus.users.forEach(user => {
+          if (user.user_id == this.selected) {
+            const msg = new SpeechSynthesisUtterance();
+            msg.text = "It is " + user.name;
+            msg.lang = "en-US";
+            window.speechSynthesis.speak(msg);
+          }
+        });
+      }
     }
   }
 
   created() {
     websocket.on("VoteResults", this.onVotingResults);
     websocket.on("NewVote", this.onNewVote);
+    websocket.on("Randomized", this.onRandomized);
   }
 
   castVote(value) {
@@ -82,6 +111,10 @@ export default class Room extends Vue {
 
   requestNewVote() {
     websocket.newVote(this.roomName);
+  }
+
+  randomize() {
+    websocket.randomize(this.roomName);
   }
 }
 </script>
@@ -117,6 +150,11 @@ export default class Room extends Vue {
     height: 60px;
     width: 60px;
     font-size: 22px;
+  }
+
+  .user-selected {
+    border: 2px solid green;
+    background-color: #77dd77;
   }
 }
 </style>

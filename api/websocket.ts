@@ -44,6 +44,9 @@ function processMessage(msg: MessageEvent) {
     case "OwnData":
       userStore.ownData(data.data.user);
       break;
+    case "Randomized":
+      roomStore.randomized(data.data.room_name, data.data.selected_user_id);
+      break;
     default:
       console.log("message not handled:" + data.type);
   }
@@ -122,7 +125,11 @@ export default {
 
   newVote(roomName: string) {
     // eslint-disable-next-line
-    sendMessage("NewVote", { "room_name": roomName })
+    sendMessage("NewVote", { "room_name": roomName });
+  },
+
+  randomize(roomName: string) {
+    sendMessage("Randomize", { "room_name": roomName });
   },
 
   register() {

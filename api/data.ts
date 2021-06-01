@@ -9,6 +9,7 @@ export class RoomStatus {
   hashed_password: string;
   users: UserData[];
   votes_cast: number;
+  selected_user: string;
 }
 
 export interface UserIdRoom {
@@ -41,8 +42,9 @@ export interface VoteResults {
   votes: Record<string, number>;
 }
 
-export interface RoomName {
+export interface RoomData {
   room_name: string;
+  selected_user_id: string;
 }
 
 export class BoxedValue<T> {
