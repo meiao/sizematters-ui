@@ -110,26 +110,27 @@ export default {
 
   joinRoom(roomName: string, password: string, passwordIsHash: boolean) {
     // eslint-disable-next-line
-    sendMessage("JoinRoom", { "room_name": roomName, "password": password, "password_is_hash": passwordIsHash });
+    sendMessage("JoinRoom", { room_name: roomName, password: password, password_is_hash: passwordIsHash });
   },
 
   leaveRoom(roomName: string) {
     // eslint-disable-next-line
-    sendMessage("LeaveRoom", { "room_name": roomName });
+    sendMessage("LeaveRoom", { room_name: roomName });
   },
 
   vote(roomName: string, size: number) {
     // eslint-disable-next-line
-    sendMessage("Vote", { "room_name": roomName, size: size });
+    sendMessage("Vote", { room_name: roomName, size: size });
   },
 
   newVote(roomName: string) {
     // eslint-disable-next-line
-    sendMessage("NewVote", { "room_name": roomName });
+    sendMessage("NewVote", { room_name: roomName });
   },
 
   randomize(roomName: string) {
-    sendMessage("Randomize", { "room_name": roomName });
+    // eslint-disable-next-line
+    sendMessage("Randomize", { room_name: roomName });
   },
 
   register() {
