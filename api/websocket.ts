@@ -103,7 +103,7 @@ export default {
   },
 
   connect(successCallback: Function, failureCallback: Function) {
-    socket = new WebSocket("wss://ws.sizematters.dev");
+    socket = new WebSocket(process.env.VUE_APP_BACKEND);
     socket.onmessage = msg => processMessage(msg);
     checkConnection(successCallback, failureCallback);
   },

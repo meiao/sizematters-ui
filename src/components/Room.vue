@@ -2,7 +2,7 @@
   <md-card class="room">
     <md-card-header class="header">
       <div class="md-title">
-        {{ roomName }} - https://sizematters.dev/room/{{ roomName }}/{{
+        {{ roomName }} - https://{{ domain }}/room/{{ roomName }}/{{
           roomStatus.hashed_password
         }}
       </div>
@@ -67,6 +67,7 @@ export default class Room extends Vue {
   vote = voteStore.getOwnVote(this.roomName);
   selected = "";
   votingDone = false;
+  domain = process.env.VUE_APP_DOMAIN;
 
   numbers: number[] = [0, 1, 2, 3, 5, 8, 13, 21];
 

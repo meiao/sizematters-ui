@@ -20,5 +20,5 @@ yarn build
 yarn lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Configure the backend
+To change where the application will connect to, copy the `.env` file to `.env.local` and change the values accordingly.
