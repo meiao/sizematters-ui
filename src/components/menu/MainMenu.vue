@@ -41,9 +41,7 @@
         </md-button>
       </header>
       <md-card v-if="rooms.length == 0" md-with-hover>
-        <md-card-content>
-          Yes, the "+" over here
-        </md-card-content>
+        <md-card-content> Yes, the "+" over here </md-card-content>
       </md-card>
       <div id="room-list">
         <md-card v-for="room in rooms" :key="room.room_name" md-with-hover>

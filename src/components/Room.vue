@@ -16,7 +16,7 @@
         class="user"
         :class="{
           'show-vote': votingDone,
-          'user-selected': selected == user.user_id
+          'user-selected': selected == user.user_id,
         }"
       />
     </md-card-content>
@@ -27,7 +27,7 @@
         :key="num"
         :class="{
           'md-accent': vote.value == num,
-          'md-primary': vote.value != num
+          'md-primary': vote.value != num,
         }"
         @click="castVote(num)"
       >
@@ -88,7 +88,7 @@ export default class Room extends Vue {
     if (this.roomName == roomData.room_name) {
       this.selected = roomData.selected_user_id;
       if ("speechSynthesis" in window) {
-        this.roomStatus.users.forEach(user => {
+        this.roomStatus.users.forEach((user) => {
           if (user.user_id == this.selected) {
             const msg = new SpeechSynthesisUtterance();
             msg.text = "It is " + user.name;

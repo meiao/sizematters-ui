@@ -12,8 +12,8 @@ const routes: Array<RouteConfig> = [
     name: "home",
     components: {
       default: Home,
-      menu: NoMenu
-    }
+      menu: NoMenu,
+    },
   },
   {
     path: "/main",
@@ -26,17 +26,17 @@ const routes: Array<RouteConfig> = [
       menu: () =>
         import(
           /* webpackChunkName: "mainMenu" */ "../components/menu/MainMenu.vue"
-        )
-    }
+        ),
+    },
   },
   {
     path: "/room/:roomName/:password",
     components: {
       default: () =>
         import(/* webpackChunkName: "main" */ "../views/Connecting.vue"),
-      menu: NoMenu
+      menu: NoMenu,
     },
-    props: { default: true, menu: false }
+    props: { default: true, menu: false },
   },
   {
     path: "/error/:type",
@@ -44,15 +44,15 @@ const routes: Array<RouteConfig> = [
     components: {
       default: () =>
         import(/* webpackChunkName: "error" */ "../views/Error.vue"),
-      menu: NoMenu
-    }
-  }
+      menu: NoMenu,
+    },
+  },
 ];
 
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
-  routes
+  routes,
 });
 
 router.beforeEach((to, from, next) => {

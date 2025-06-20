@@ -48,8 +48,8 @@ export default class UserCard extends Vue {
         : name.toLowerCase().padEnd(4, String.fromCharCode(baseCharCode - 1));
     return nameToUse
       .split("")
-      .map(c => c.charCodeAt(0) - baseCharCode + 11)
-      .map(n => n.toString())
+      .map((c) => c.charCodeAt(0) - baseCharCode + 11)
+      .map((n) => n.toString())
       .join("");
   }
 }
