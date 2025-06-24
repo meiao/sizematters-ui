@@ -16,7 +16,7 @@ function userUpdated(updatedUser: UserData) {
 }
 
 function roomJoined(roomStatus: RoomStatus) {
-  roomStatus.users.forEach(user => userUpdated(user));
+  roomStatus.users.forEach((user) => userUpdated(user));
 }
 
 function ownData(userData: UserData) {
@@ -30,6 +30,14 @@ function isNameSet(): BoxedValue<boolean> {
 
 function setNameSet() {
   nameSet.value = true;
+}
+
+function activeUpdated(userData: UserData) {
+  const user = users.get(userData.user_id);
+  if (user !== undefined) {
+    // eslint-disable-next-line
+    user.active = userData.active;
+  }
 }
 
 export default {
@@ -63,5 +71,8 @@ export default {
 
   setNameSet() {
     setNameSet();
-  }
+  },
+  activeUpdated(userData: UserData) {
+    activeUpdated(userData);
+  },
 };

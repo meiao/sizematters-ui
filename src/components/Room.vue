@@ -2,9 +2,8 @@
   <md-card class="room">
     <md-card-header class="header">
       <div class="md-title">
-        {{ roomName }} - https://{{ domain }}/room/{{ roomName }}/{{
-          roomStatus.hashed_password
-        }}
+        {{ roomInfo }}
+        <md-button class="md-raised" @click="copyRoomUrl"> Copy Url </md-button>
       </div>
     </md-card-header>
     <md-card-content class="user-space">
@@ -67,9 +66,9 @@ export default class Room extends Vue {
   vote = voteStore.getOwnVote(this.roomName);
   selected = "";
   votingDone = false;
-  domain = process.env.VUE_APP_DOMAIN;
+  roomInfo = "";
 
-  numbers: number[] = [0, 1, 2, 3, 5, 8, 13, 21];
+  numbers: string[] = [];
 
   onVotingResults(roomData: RoomData) {
     if (this.roomName == roomData.room_name) {
@@ -100,10 +99,32 @@ export default class Room extends Vue {
     }
   }
 
+  onScaleChanged(roomData?: RoomData) {
+    if (roomData) {
+      this.numbers = roomData.selected_scale.values;
+    } else {
+      this.numbers =
+        this.roomStatus.scale_values[
+          this.roomStatus.selected_scale_name
+        ].values;
+    }
+  }
+
+  updateRoomInfo() {
+    this.roomInfo = this.roomName + " - " + roomStore.roomUrl(this.roomStatus);
+  }
+
+  copyRoomUrl() {
+    roomStore.copyRoomUrl(this.roomStatus);
+  }
+
   created() {
+    this.updateRoomInfo();
+    this.onScaleChanged();
     websocket.on("VoteResults", this.onVotingResults);
     websocket.on("NewVote", this.onNewVote);
     websocket.on("Randomized", this.onRandomized);
+    websocket.on("ScaleChanged", this.onScaleChanged);
   }
 
   castVote(value) {

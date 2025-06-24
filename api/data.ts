@@ -2,6 +2,13 @@ export interface UserData {
   user_id: string;
   name: string;
   gravatar_id: string;
+  active: boolean;
+}
+
+export interface Scale {
+  name: string;
+  displayName: string;
+  values: string[];
 }
 
 export class RoomStatus {
@@ -10,6 +17,8 @@ export class RoomStatus {
   users: UserData[];
   votes_cast: number;
   selected_user: string;
+  scale_values: Map<string, Scale>;
+  selected_scale_name: string;
 }
 
 export interface UserIdRoom {
@@ -45,6 +54,7 @@ export interface VoteResults {
 export interface RoomData {
   room_name: string;
   selected_user_id: string;
+  selected_scale: Scale;
 }
 
 export class BoxedValue<T> {

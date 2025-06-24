@@ -9,10 +9,12 @@
       :md-active.sync="showEmailDialog"
       @md-confirm="setAvatar"
       md-title="Profile picture"
-      md-content="I tried my best to create a profile picture for you.<br />
-                      Since you didn't like it, you can use your Gravatar image.<br />
-                      I will need your email for such.<br />
-                      I promise I won't save/sell your email."
+      md-content="I tried my best to create a profile
+    picture for you.<br />
+    Since you didn't like it, you can use your
+    <a target='_blank' href='https://www.gravatar.com'>Gravatar</a> image.<br />
+    I will need your email for such.<br />
+    I promise I won't save/sell your email."
     />
     <md-card md-with-hover>
       <md-card-content id="user-tag">
@@ -50,6 +52,22 @@
           </md-card-header>
           <md-card-content>
             Voting: {{ room.votes_cast }}/{{ room.users.length }}
+            <md-field>
+              <label for="selected_scale">Scale</label>
+              <md-select
+                v-model="room.selected_scale_name"
+                name="scale"
+                v-on="scaleChanged(room.room_name)"
+              >
+                <md-option
+                  v-for="scale in room.scale_values"
+                  :key="scale.name"
+                  :value="scale.name"
+                >
+                  {{ scale.displayName }}</md-option
+                >
+              </md-select>
+            </md-field>
           </md-card-content>
           <md-card-actions>
             <md-button @click="leaveRoom(room.room_name)">Leave</md-button>
@@ -88,6 +106,27 @@
         </md-dialog-actions>
       </md-dialog>
     </div>
+
+    <div id="thanks">
+      <div @click="showThanksDialog = true">Thanks</div>
+      <md-dialog id="thanks-dialog" :md-active.sync="showThanksDialog">
+        <md-dialog-title>Thanks</md-dialog-title>
+        <md-dialog-content>
+          <p>
+            Built with
+            <a target="_blank" href="https://actix.rs/">Actix Web</a> and
+            <a target="_blank" href="https://vuejs.org/">Vue</a>.
+          </p>
+          <p>
+            Images provided by
+            <a target="_blank" href="https://gravatar.com">Gravatar</a>.
+          </p>
+        </md-dialog-content>
+        <md-dialog-actions>
+          <md-button @click="showThanksDialog = false">Close</md-button>
+        </md-dialog-actions>
+      </md-dialog>
+    </div>
   </div>
 </template>
 
@@ -120,6 +159,13 @@
     margin-top: 16px;
   }
 }
+
+#thanks {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
 </style>
 
 <script lang="ts">
@@ -133,6 +179,7 @@ export default class MenuMain extends Vue {
   showNameDialog = false;
   showEmailDialog = false;
   showRoomDialog = false;
+  showThanksDialog = false;
 
   name = "not connected";
   imgUrl = "";
@@ -142,12 +189,20 @@ export default class MenuMain extends Vue {
 
   roomName = "";
   roomPassword = "";
+  selectedScale = "";
+  lastRoomSelected = "";
 
   rooms: RoomStatus[] = roomStore.rooms();
 
   created() {
     websocket.on("OwnData", this.personalDataReceived);
+    websocket.on("ScaleChanged", this.scaleChangeReceived);
+    websocket.on("RoomJoined", this.onRoomJoined);
     websocket.register();
+  }
+
+  onRoomJoined(data) {
+    this.selectedScale = data.selected_scale_name;
   }
 
   personalDataReceived(data) {
@@ -157,6 +212,13 @@ export default class MenuMain extends Vue {
       "https://www.gravatar.com/avatar/" + userData.gravatar_id + "?d=retro";
     this.providedName = userData.name;
     this.providedUrl = "";
+    this.selectedScale = data.selected_scale_name;
+  }
+
+  scaleChangeReceived(data) {
+    if (data.selected_scale.name != this.selectedScale) {
+      this.selectedScale = data.selected_scale.name;
+    }
   }
 
   setName(name) {
@@ -176,6 +238,12 @@ export default class MenuMain extends Vue {
 
   leaveRoom(roomName: string) {
     websocket.leaveRoom(roomName);
+  }
+  scaleChanged(roomName: string) {
+    const room: RoomStatus = this.rooms.find(
+      (room) => room.room_name == roomName
+    )!;
+    websocket.changeScale(roomName, room.selected_scale_name);
   }
 }
 </script>

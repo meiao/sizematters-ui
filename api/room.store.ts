@@ -1,4 +1,4 @@
-import { RoomStatus, UserRoom, UserIdRoom } from "./data";
+import { RoomStatus, UserRoom, UserIdRoom, Scale } from "./data";
 
 import userStore from "./user.store";
 
@@ -12,6 +12,12 @@ function getRoom(roomName: string): RoomStatus {
     roomMap.set(roomName, room);
   }
   return room;
+}
+
+function getNumbers(roomName: string): string[] {
+  const room = getRoom(roomName);
+  const numbers = room.scale_values[room.selected_scale_name].values;
+  return numbers;
 }
 
 function roomJoined(roomStatus: RoomStatus) {
@@ -42,7 +48,7 @@ function userLeft(userLeft: UserIdRoom) {
     const room = roomMap.get(roomName);
     if (room !== undefined) {
       const usersInRoom = room.users;
-      const index = usersInRoom.findIndex(x => x.user_id == userLeft.user_id);
+      const index = usersInRoom.findIndex((x) => x.user_id == userLeft.user_id);
       if (index !== undefined && index > -1) {
         usersInRoom.splice(index, 1);
       }
@@ -53,7 +59,7 @@ function userLeft(userLeft: UserIdRoom) {
 function voteStatus(roomName: string, votes: Record<string, boolean>) {
   const room = getRoom(roomName);
   let voteCount = 0;
-  Object.keys(votes).forEach(userId => {
+  Object.keys(votes).forEach((userId) => {
     if (votes[userId]) {
       voteCount++;
     }
@@ -75,6 +81,36 @@ function randomized(roomName: string, selectedUser: string) {
   room.selected_user = selectedUser;
 }
 
+function scaleChanged(roomName: string, selectedScaleName: string) {
+  const room = getRoom(roomName);
+  // eslint-disable-next-line
+  room.selected_scale_name = selectedScaleName;
+}
+function roomUrl(roomStatus: RoomStatus): string {
+  return (
+    window.location.protocol +
+    "//" +
+    window.location.host +
+    "/room/" +
+    roomStatus.room_name +
+    "/" +
+    roomStatus.hashed_password
+  );
+}
+
+function textToClipboard(text) {
+  const dummy = document.createElement("textarea");
+  document.body.appendChild(dummy);
+  dummy.value = text;
+  dummy.select();
+  document.execCommand("copy");
+  document.body.removeChild(dummy);
+}
+
+function copyRoomUrl(roomStatus: RoomStatus) {
+  textToClipboard(roomUrl(roomStatus));
+}
+
 export default {
   rooms(): Array<RoomStatus> {
     return rooms;
@@ -82,6 +118,10 @@ export default {
 
   room(roomName: string): RoomStatus {
     return getRoom(roomName);
+  },
+
+  numbers(roomName: string): string[] {
+    return getNumbers(roomName);
   },
 
   roomJoined(roomStatus: RoomStatus) {
@@ -106,5 +146,15 @@ export default {
 
   randomized(roomName: string, selectedUser: string) {
     randomized(roomName, selectedUser);
-  }
+  },
+
+  scaleChanged(roomName: string, selectedScale: Scale) {
+    scaleChanged(roomName, selectedScale.name);
+  },
+  roomUrl(roomStatus: RoomStatus): string {
+    return roomUrl(roomStatus);
+  },
+  copyRoomUrl(roomStatus: RoomStatus) {
+    copyRoomUrl(roomStatus);
+  },
 };

@@ -47,8 +47,14 @@ function processMessage(msg: MessageEvent) {
     case "Randomized":
       roomStore.randomized(data.data.room_name, data.data.selected_user_id);
       break;
+    case "ScaleChanged":
+      roomStore.scaleChanged(data.data.room_name, data.data.selected_scale);
+      break;
+    case "ActiveUpdated":
+      userStore.activeUpdated(data.data);
+      break;
     default:
-      console.log("message not handled:" + data.type);
+      console.log("websocket.processMessage: message not handled:" + data.type);
   }
 }
 
@@ -64,6 +70,14 @@ function setName(name: string) {
   sendMessage("SetName", { name: name });
   localStorage.setItem("name", name);
   userStore.setNameSet();
+}
+
+function updateActive(roomName: string, userId: string, active: boolean) {
+  sendMessage("UpdateActive", {
+    room_name: roomName,
+    user_id: userId,
+    active: active,
+  });
 }
 
 function setAvatar(email: string) {
@@ -104,13 +118,17 @@ export default {
 
   connect(successCallback: Function, failureCallback: Function) {
     socket = new WebSocket(process.env.VUE_APP_BACKEND);
-    socket.onmessage = msg => processMessage(msg);
+    socket.onmessage = (msg) => processMessage(msg);
     checkConnection(successCallback, failureCallback);
   },
 
   joinRoom(roomName: string, password: string, passwordIsHash: boolean) {
     // eslint-disable-next-line
-    sendMessage("JoinRoom", { room_name: roomName, password: password, password_is_hash: passwordIsHash });
+    sendMessage("JoinRoom", {
+      room_name: roomName,
+      password: password,
+      password_is_hash: passwordIsHash,
+    });
   },
 
   leaveRoom(roomName: string) {
@@ -129,12 +147,18 @@ export default {
   },
 
   randomize(roomName: string) {
-    // eslint-disable-next-line
     sendMessage("Randomize", { room_name: roomName });
   },
 
   register() {
     sendMessage("Register", null);
+  },
+
+  changeScale(roomName: string, selectedScaleName: string) {
+    sendMessage("ChangeScale", {
+      room_name: roomName,
+      selected_scale_name: selectedScaleName,
+    });
   },
 
   setAvatar(email: string) {
@@ -145,11 +169,15 @@ export default {
     setName(name);
   },
 
+  updateActive(roomName: string, userId: string, active: boolean) {
+    updateActive(roomName, userId, active);
+  },
+
   on(event: string, callback: Function) {
-    eventBus.$on(event, data => callback(data));
+    eventBus.$on(event, (data) => callback(data));
   },
 
   once(event: string, callback: Function) {
-    eventBus.$once(event, data => callback(data));
-  }
+    eventBus.$once(event, (data) => callback(data));
+  },
 };
