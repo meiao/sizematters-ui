@@ -1,5 +1,9 @@
 # sizematters-ui
 
+This project is no longer used. 
+
+The newer versions of Sizematters have the ui written in Rust/Leptos and it resides in the same repo.
+
 ## Project setup
 ```
 yarn install
